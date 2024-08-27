@@ -69,7 +69,7 @@ class Blog(BaseModel):
 
 class Faq(BaseModel):
     title = CharField(max_length=256, verbose_name="Title")
-    description = CharField(max_length=256, verbose_name="Description")
+    description = TextField(verbose_name="Description")
 
     def __str__(self):
         return self.title
