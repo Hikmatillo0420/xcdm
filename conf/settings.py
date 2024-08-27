@@ -2,22 +2,26 @@ from pathlib import Path
 import os
 from datetime import timedelta
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv()
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*k1kq%r@a8*wd!+93=rt(m#$zycpw(d89@_0foh1o0do#y5ti5'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+__ENV_DEBUG = os.getenv('DJANGO_DEBUG')
+DEBUG = int(__ENV_DEBUG) if __ENV_DEBUG.isdigit() else __ENV_DEBUG == 'True'
 
 ALLOWED_HOSTS = ["*"]
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
-
 INSTALLED_APPS = [
     'jazzmin',
     'modeltranslation',
@@ -27,10 +31,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'company.apps.CompanyConfig',
+
     'rest_framework',
     'drf_yasg',
-    'django_filters',
     'django_ckeditor_5',
     "corsheaders",
 
@@ -49,7 +54,6 @@ LOCALE_PATHS = [
 ]
 
 MODELTRANSLATION_LANGUAGES = ('en', 'ru', 'uz')
-
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
 MIDDLEWARE = [
@@ -82,7 +86,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'conf.wsgi.application'
-CORS_ALLOW_ALL_ORIGINS = "True"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -143,20 +146,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication'
     ),
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ),
-    # 'EXCEPTION_HANDLER': 'shared.exceptions.custom_exception_handler',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
-    # 'DEFAULT_THROTTLE_CLASSES': [
-    #     'rest_framework.throttling.AnonRateThrottle',
-    #     'rest_framework.throttling.UserRateThrottle'
-    # ],
-    # 'DEFAULT_THROTTLE_RATES': {
-    #     'anon': '10/minute',
-    #     'user': '10/minute'
-    # }
 }
 
 SWAGGER_SETTINGS = {
@@ -179,30 +170,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
     'ALGORITHM': 'HS256',
     'UPDATE_LAST_LOGIN': True,
-    # "TOKEN_OBTAIN_SERIALIZER": "apps.shared.rest_framework.CustomTokenObtainPairSerializer",
 
 }
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.getenv('CACHE_BACKEND_URL'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
-
-CACHE_OTP_TTL = 300
-CACHE_OTP_KEY_PREFIX = 'otp'
-
-SILENCED_SYSTEM_CHECKS = ['auth.E003']
-
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = os.getenv('TIME_ZONE')
 
 LOGIN_URL = 'admin/'
 LOGIN_REDIRECT_URL = '/'

@@ -3,13 +3,13 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework.permissions import IsAuthenticated
 
 from conf import settings
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('api/v1/', include('company.urls')),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
+    path('', admin.site.urls),
 
 ]
 if settings.DEBUG:
@@ -31,7 +31,7 @@ if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns += [
-        path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+        path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
         path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
         path('__debug__', include(debug_toolbar.urls)),
     ]

@@ -1,39 +1,51 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
-from django.db.models import Model, CharField, TextField, ImageField, SlugField, ForeignKey, FileField, DateField
-from re import sub as re_sub
+from django.db.models import Model, CharField, TextField, ImageField, SlugField, ForeignKey, FileField, DateField, \
+    URLField
+from re import match
 from django.utils.translation import gettext_lazy as _
-from django_ckeditor_5.fields import CKEditor5Field
+
+
+def validate_linkedin_url(value):
+    linkedin_pattern = r'^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$'
+    if not match(linkedin_pattern, value):
+        raise ValidationError(
+            _('Invalid LinkedIn profile URL.'),
+            params={'value': value},
+        )
 
 
 class BaseModel(Model):
-    objects = None
-
     class Meta:
         abstract = True
 
 
 class Category(BaseModel):
-    title = CharField(max_length=256, verbose_name="Title")
-    image = ImageField(upload_to="images/", verbose_name="Image", null=True, blank=True)
+    title = CharField(max_length=256)
+    image = ImageField(upload_to="images/", null=True, blank=True)
 
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+
 
 class Project(BaseModel):
-    category = ForeignKey('company.Category', on_delete=models.CASCADE, verbose_name=_("Category"))
-    title = CharField(max_length=255, verbose_name="title")
-    type = CharField(max_length=255, verbose_name="type")
-    image_logo = ImageField(upload_to='project_image_logo/', verbose_name="image_logo", null=True, blank=True)
-    description_short = TextField(verbose_name="description_short")
-    project_type = CharField(max_length=255, verbose_name="project_type")
-    preview = CharField(max_length=255, verbose_name="preview")
-    description_long = TextField(verbose_name="description_long")
-    video = FileField(upload_to='project_video/', verbose_name="video", null=True, blank=True)
-    image = ImageField(upload_to='project_image/', verbose_name="image", null=True, blank=True)
-    youtube_link = CharField(max_length=255, verbose_name="youtube_link", null=True, blank=True)
-    slug = SlugField(max_length=255, verbose_name=_('Slug'), unique=True)
+    category = ForeignKey('company.Category', on_delete=models.CASCADE, )
+    title = CharField(max_length=255)
+    type = CharField(max_length=255)
+    image_logo = ImageField(upload_to='project_image_logo/', null=True, blank=True)
+    description_short = TextField()
+    project_type = CharField(max_length=255)
+    preview = CharField(max_length=255)
+    description_long = TextField()
+    video = FileField(upload_to='project_video/', null=True, blank=True)
+    image = ImageField(upload_to='project_image/', null=True, blank=True)
+    youtube_link = URLField(max_length=255, null=True, blank=True)
+    slug = SlugField(max_length=255, unique=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -54,14 +66,10 @@ class Project(BaseModel):
 
 
 class Blog(BaseModel):
-    title = CharField(max_length=256, verbose_name="Title")
-    data = DateField(verbose_name="Data")
-    image_front = ImageField(upload_to='blog/', verbose_name="image front")
-    description_front = TextField(verbose_name="description front")
-    image_back = ImageField(upload_to='blog/', verbose_name="image back", null=True, blank=True)
-    description_uz = CKEditor5Field(config_name="extends", verbose_name="description uz", null=True, blank=True)
-    description_ru = CKEditor5Field(config_name="extends", verbose_name="description ru", null=True, blank=True)
-    description_eng = CKEditor5Field(config_name="extends", verbose_name="description eng", null=True, blank=True)
+    title = CharField(max_length=256)
+    date = DateField()
+    banner = ImageField(upload_to='blog/')
+    description = TextField()
 
     def __str__(self):
         return self.title
@@ -75,24 +83,28 @@ class Faq(BaseModel):
         return self.title
 
 
-class Team_category(BaseModel):
-    title = CharField(max_length=256, verbose_name="Title")
+class TeamCategory(BaseModel):
+    title = CharField(max_length=256)
 
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Team Category'
+        verbose_name_plural = 'Team Categories'
 
-class Team(BaseModel):
-    team_category = models.ForeignKey('company.Team_category', on_delete=models.CASCADE, verbose_name="Category")
-    full_name = CharField(max_length=256, verbose_name="Full name")
-    image = ImageField(upload_to='team/', verbose_name="image")
-    position = CharField(max_length=256, verbose_name="Position")
-    linkedin_link = CharField(max_length=256, verbose_name="Linkedin link")
-    slug = SlugField(max_length=255, verbose_name=_('Slug'), unique=True)
+
+class TeamMember(BaseModel):
+    category = models.ForeignKey('company.TeamCategory', on_delete=models.CASCADE)
+    full_name = CharField(max_length=256)
+    image = ImageField(upload_to='team/')
+    position = CharField(max_length=256)
+    linkedin = URLField(max_length=256, validators=[validate_linkedin_url])
+    slug = SlugField(max_length=255, unique=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.position)
+            self.slug = slugify(self.full_name)
         super().save(*args, **kwargs)
 
     def __str__(self):

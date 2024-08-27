@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Project, Blog, Faq, Team_category, Team
+from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -26,13 +26,15 @@ class FaqSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class Team_categorySerializer(serializers.ModelSerializer):
+class TeamCategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Team_category
-        fields = "__all__"
+        model = TeamCategory
+        exclude = 'title',
 
 
-class TeamSerializer(serializers.ModelSerializer):
+class TeamMemberSerializer(serializers.ModelSerializer):
+    category = TeamCategorySerializer()
+
     class Meta:
-        model = Team
+        model = TeamMember
         fields = "__all__"
