@@ -1,5 +1,5 @@
 from modeltranslation.translator import TranslationOptions, register, translator
-from .models import Project, Blog, Faq, Team_category, Team
+from .models import Project, Blog, Faq, TeamCategory,TeamPosition
 
 
 @register(Project)
@@ -9,7 +9,7 @@ class ProjectTranslationOptions(TranslationOptions):
 
 @register(Blog)
 class BlogTranslationOptions(TranslationOptions):
-    fields = ('title', 'description_front')
+    fields = ('title', 'description')
 
 
 @register(Faq)
@@ -17,11 +17,11 @@ class FaqTranslationOptions(TranslationOptions):
     fields = ('title', 'description')
 
 
-@register(Team_category)
+@register(TeamCategory)
 class TeamCategoryTranslationOptions(TranslationOptions):
     fields = ('title',)
 
 
-@register(Team)
-class TeamTranslationOptions(TranslationOptions):
-    fields = ('position',)
+@register(TeamPosition)
+class TeamPositionTranslationOptions(TranslationOptions):
+    fields = ('title',)

@@ -1,16 +1,16 @@
 from django.urls import path
 from company.views import CategoryView, ProjectView, ProjectListAPIView, BlogListAPIView, FaqListAPIView, \
-    Team_categoryListAPIView, TeamListView, TeamView
+    TeamCategoryListAPIView, TeamMemberListView, TeamMemberRetrieveAPIView
 
 urlpatterns = [
 
-    path('category', CategoryView.as_view(), name='category'),
-    path('project', ProjectListAPIView.as_view(), name='project'),
-    path('project/<slug:slug>', ProjectView.as_view(), name='project_products'),
-    path('blog', BlogListAPIView.as_view(), name='blog'),
-    path('faq', FaqListAPIView.as_view(), name='faq'),
-    path('team_category', Team_categoryListAPIView.as_view(), name='team_category'),
-    path('team', TeamListView.as_view(), name='team'),
-    path('team/<slug:slug>', TeamView.as_view(), name='team_detail'),
+    path('categories', CategoryView.as_view(), name='category'),
+    path('projects', ProjectListAPIView.as_view(), name='project'),
+    path('projects/<slug:slug>', ProjectView.as_view(), name='project_products'),
+    path('blogs', BlogListAPIView.as_view(), name='blog'),
+    path('faqs', FaqListAPIView.as_view(), name='faq'),
+    path('team-categories', TeamCategoryListAPIView.as_view(), name='team_category'),
+    path('team-members', TeamMemberListView.as_view(), name='team'),
+    path('team-members/<slug:slug>', TeamMemberRetrieveAPIView.as_view(), name='team_detail'),
 
 ]
