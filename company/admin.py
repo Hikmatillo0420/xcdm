@@ -1,9 +1,10 @@
 from django.contrib import admin
+from django.contrib.admin import ModelAdmin
 from django.db.models import TextField
 from django.utils.html import format_html, strip_tags
 from django_ckeditor_5.widgets import CKEditor5Widget
 from modeltranslation.admin import TranslationAdmin
-from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember
+from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, TeamPosition
 from re import search
 
 
@@ -52,8 +53,13 @@ class TeamCategoryAdmin(TranslationAdmin):
     list_display = ['id', 'title']
 
 
+@admin.register(TeamPosition)
+class TeamPositionAdmin(TranslationAdmin):
+    list_display = ['id', 'title']
+
+
 @admin.register(TeamMember)
-class TeamMemberAdmin(TranslationAdmin):
+class TeamMemberAdmin(ModelAdmin):
     exclude = ('slug',)
     list_display = ['id', 'full_name', 'image_html', 'position', 'linkedin_url']
     list_display_links = ('id', 'full_name')

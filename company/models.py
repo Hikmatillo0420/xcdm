@@ -94,11 +94,18 @@ class TeamCategory(BaseModel):
         verbose_name_plural = 'Team Categories'
 
 
+class TeamPosition(BaseModel):
+    title = CharField(max_length=256)
+
+    def __str__(self):
+        return self.title
+
+
 class TeamMember(BaseModel):
     category = models.ForeignKey('company.TeamCategory', on_delete=models.CASCADE)
     full_name = CharField(max_length=256)
     image = ImageField(upload_to='team/')
-    position = CharField(max_length=256)
+    position = ForeignKey('company.TeamPosition', on_delete=models.CASCADE)
     linkedin = URLField(max_length=256, validators=[validate_linkedin_url])
     slug = SlugField(max_length=255, unique=True)
 
