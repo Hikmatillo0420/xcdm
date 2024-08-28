@@ -5,6 +5,7 @@ from django.db.models import Model, CharField, TextField, ImageField, SlugField,
     URLField
 from re import match
 from django.utils.translation import gettext_lazy as _
+from ordered_model.models import OrderedModel
 
 
 def validate_linkedin_url(value):
@@ -83,13 +84,13 @@ class Faq(BaseModel):
         return self.title
 
 
-class TeamCategory(BaseModel):
+class TeamCategory(OrderedModel):
     title = CharField(max_length=256)
 
     def __str__(self):
         return self.title
 
-    class Meta:
+    class Meta(OrderedModel.Meta):
         verbose_name = 'Team Category'
         verbose_name_plural = 'Team Categories'
 
@@ -101,8 +102,8 @@ class TeamPosition(BaseModel):
         return self.title
 
 
-class TeamMember(BaseModel):
-    category = models.ForeignKey('company.TeamCategory', on_delete=models.CASCADE)
+class TeamMember(OrderedModel):
+    category = models.ForeignKey('company.TeamCategory', on_delete=models.CASCADE, related_name='members', )
     full_name = CharField(max_length=256)
     image = ImageField(upload_to='team/')
     position = ForeignKey('company.TeamPosition', on_delete=models.CASCADE)
@@ -116,3 +117,6 @@ class TeamMember(BaseModel):
 
     def __str__(self):
         return self.full_name
+
+    class Meta(OrderedModel.Meta):
+        pass
