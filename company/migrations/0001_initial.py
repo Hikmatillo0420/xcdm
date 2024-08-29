@@ -27,7 +27,6 @@ class Migration(migrations.Migration):
                 ('description_en', models.TextField(null=True)),
                 ('description_ru', models.TextField(null=True)),
                 ('description_uz', models.TextField(null=True)),
-                ('image', models.ImageField(blank=True, null=True, upload_to='blog/')),
             ],
             options={
                 'abstract': False,
