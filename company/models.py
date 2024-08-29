@@ -6,6 +6,7 @@ from django.db.models import Model, CharField, TextField, ImageField, SlugField,
 from re import match
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
+from datetime import date
 
 
 def validate_linkedin_url(value):
@@ -68,7 +69,7 @@ class Project(BaseModel):
 
 class Blog(BaseModel):
     title = CharField(max_length=256)
-    date = DateField()
+    date = DateField(default=date.today)
     banner = ImageField(upload_to='blog/')
     description = TextField()
 
