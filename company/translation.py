@@ -9,7 +9,7 @@ class ProjectTranslationOptions(TranslationOptions):
 
 @register(Blog)
 class BlogTranslationOptions(TranslationOptions):
-    fields = ('title', 'description', 'description_short')
+    fields = ('title', 'description')
 
 
 @register(Faq)
