@@ -37,12 +37,3 @@ class TeamCategoryListAPIView(ListAPIView):
     serializer_class = TeamCategorySerializer
 
 
-class TeamMemberListView(ListAPIView):
-    queryset = TeamMember.objects.all()
-    serializer_class = TeamMemberSerializer
-
-
-class TeamMemberRetrieveAPIView(RetrieveAPIView):
-    queryset = TeamMember.objects.all()
-    serializer_class = TeamMember
-    lookup_field = 'slug'

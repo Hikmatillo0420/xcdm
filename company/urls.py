@@ -1,6 +1,6 @@
 from django.urls import path
 from company.views import CategoryView, ProjectView, ProjectListAPIView, BlogListAPIView, FaqListAPIView, \
-    TeamCategoryListAPIView, TeamMemberListView, TeamMemberRetrieveAPIView
+    TeamCategoryListAPIView
 
 urlpatterns = [
 

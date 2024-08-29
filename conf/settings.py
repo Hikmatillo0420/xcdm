@@ -14,8 +14,8 @@ load_dotenv()
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-__ENV_DEBUG = os.getenv('DJANGO_DEBUG', 'Fals')
-DEBUG = int(__ENV_DEBUG) if __ENV_DEBUG.isdigit() else __ENV_DEBUG == 'true'
+__ENV_DEBUG = os.getenv('DJANGO_DEBUG')
+DEBUG = int(__ENV_DEBUG) if __ENV_DEBUG.isdigit() else __ENV_DEBUG == 'True'
 
 ALLOWED_HOSTS = ["*"]
 CORS_ORIGIN_ALLOW_ALL = True

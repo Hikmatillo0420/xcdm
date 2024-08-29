@@ -69,7 +69,7 @@ class Project(BaseModel):
 
 class Blog(BaseModel):
     title = CharField(max_length=256)
-    date = DateField(default=date.today)
+    date = DateField(null=True, blank=True)
     banner = ImageField(upload_to='blog/')
     description = TextField()
 
