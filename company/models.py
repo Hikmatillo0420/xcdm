@@ -71,7 +71,9 @@ class Blog(BaseModel):
     title = CharField(max_length=256)
     create_at = DateField(auto_now=True)
     banner = ImageField(upload_to='blog/')
+    description_short = TextField()
     description = TextField()
+    image = ImageField(upload_to='blog/', null=True, blank=True)
 
     def __str__(self):
         return self.title
