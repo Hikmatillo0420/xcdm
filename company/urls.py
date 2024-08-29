@@ -10,7 +10,5 @@ urlpatterns = [
     path('blogs', BlogListAPIView.as_view(), name='blog'),
     path('faqs', FaqListAPIView.as_view(), name='faq'),
     path('team-categories', TeamCategoryListAPIView.as_view(), name='team_category'),
-    path('team-members', TeamMemberListView.as_view(), name='team'),
-    path('team-members/<slug:slug>', TeamMemberRetrieveAPIView.as_view(), name='team_detail'),
 
 ]
