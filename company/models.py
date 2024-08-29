@@ -72,7 +72,7 @@ class Blog(BaseModel):
     create_at = DateField(auto_now=True)
     banner = ImageField(upload_to='blog/')
     description = TextField()
-    image = ImageField(upload_to='blog/', null=True, blank=True)
+    image = ImageField(upload_to='blog/')
 
     def __str__(self):
         return self.title
