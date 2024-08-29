@@ -31,7 +31,7 @@ class ProjectAdmin(TranslationAdmin):
 
 @admin.register(Blog)
 class BlogAdmin(TranslationAdmin):
-    list_display = ['id', 'title', 'date', 'banner_image']
+    list_display = ['id', 'title', 'create_at', 'banner_image']
     formfield_overrides = {
         TextField: {'widget': CKEditor5Widget},
     }
