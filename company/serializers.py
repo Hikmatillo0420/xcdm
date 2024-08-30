@@ -9,9 +9,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    category_title = serializers.SerializerMethodField()
+
     class Meta:
         model = Project
-        fields = "__all__"
+        fields = ['id', 'category', 'category_title', 'title', 'type', 'image_logo', 'description_short',
+                  'project_type', 'preview', 'description_long', 'video', 'image', 'youtube_link', 'slug']
+
+    def get_category_title(self, obj):
+        return obj.category.title
 
 
 class BlogSerializer(serializers.ModelSerializer):
