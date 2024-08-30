@@ -13,8 +13,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['id', 'category', 'category_title', 'title', 'type', 'image_logo', 'description_short',
-                  'project_type', 'preview', 'description_long', 'video', 'image', 'youtube_link', 'slug']
+        fields = "__all__"
 
     def get_category_title(self, obj):
         return obj.category.title
@@ -23,7 +22,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = "__all__"
+        fields ="__all__"
 
 
 class FaqSerializer(serializers.ModelSerializer):
