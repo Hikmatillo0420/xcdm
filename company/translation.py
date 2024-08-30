@@ -4,7 +4,7 @@ from .models import Project, Blog, Faq, TeamCategory, TeamPosition
 
 @register(Project)
 class ProjectTranslationOptions(TranslationOptions):
-    fields = ( 'type', 'description_short',)
+    fields = ('type', 'project_type', 'description_short', 'description_long')
 
 
 @register(Blog)

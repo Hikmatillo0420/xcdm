@@ -42,7 +42,7 @@ class Project(BaseModel):
     image_logo = ImageField(upload_to='project_image_logo/', null=True, blank=True)
     description_short = TextField()
     project_type = CharField(max_length=255)
-    preview = CharField(max_length=255)
+    preview = CharField(max_length=255, verbose_name='Previw Link')
     description_long = TextField()
     video = FileField(upload_to='project_video/', null=True, blank=True)
     image = ImageField(upload_to='project_image/', null=True, blank=True)
