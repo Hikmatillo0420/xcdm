@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.text import slugify
-from django.db.models import Model, CharField, TextField, ImageField, SlugField, ForeignKey, FileField, DateField, \
+from django.db.models import Model, CharField, TextField, ImageField, ForeignKey, FileField, DateField, \
     URLField
 from re import match
 from django.utils.translation import gettext_lazy as _
@@ -66,6 +65,7 @@ class Blog(BaseModel):
     create_at = DateField(default=date.today)
     banner = ImageField(upload_to='blog/')
     description = TextField()
+    description_back = TextField()
     image = ImageField(upload_to='blog/', null=True, blank=True)
 
     def __str__(self):
@@ -104,12 +104,6 @@ class TeamMember(OrderedModel):
     image = ImageField(upload_to='team/')
     position = ForeignKey('company.TeamPosition', on_delete=models.CASCADE)
     linkedin = URLField(max_length=256, validators=[validate_linkedin_url])
-    slug = SlugField(max_length=255, unique=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.full_name)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.full_name

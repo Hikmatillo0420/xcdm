@@ -22,7 +22,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields ="__all__"
+        fields = "__all__"
 
 
 class FaqSerializer(serializers.ModelSerializer):
