@@ -47,12 +47,6 @@ class Project(BaseModel):
     video = FileField(upload_to='project_video/', null=True, blank=True)
     image = ImageField(upload_to='project_image/', null=True, blank=True)
     youtube_link = URLField(max_length=255, null=True, blank=True)
-    slug = SlugField(max_length=255)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
 
     def change(self, *args, **kwargs):
         video_id = self.youtube_link.split('youtu.be/')[1].split('?')[0]
