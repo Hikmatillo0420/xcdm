@@ -1,5 +1,10 @@
 from modeltranslation.translator import TranslationOptions, register, translator
-from .models import Project, Blog, Faq, TeamCategory, TeamPosition
+from .models import Project, Blog, Faq, TeamCategory, TeamPosition, Category
+
+
+@register(Category)
+class CategoryTranslationOptions(TranslationOptions):
+    fields = ('title',)
 
 
 @register(Project)

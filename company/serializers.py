@@ -5,7 +5,7 @@ from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, Team
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'title', 'image']
+        fields = "__all__"
 
 
 class ProjectSerializer(serializers.ModelSerializer):
