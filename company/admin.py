@@ -12,21 +12,35 @@ from re import search
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'image')
+    list_display = ('id', 'title', 'display_image')
+
+    def display_image(self, obj: Category):
+        if obj.image:
+            return format_html(f'<img style="border-radius: 7px;" width="60px" height="40px" src="{obj.image.url}"/>')
+        return "No Image"
+
+    display_image.short_description = 'Category Image'
 
 
 @admin.register(Project)
 class ProjectAdmin(TranslationAdmin):
     exclude = ('slug',)
-    list_display = ['id', 'title', 'type', 'image_logo', 'description_short', 'project_type', 'preview',
-                    'description_long', 'video', 'image', 'youtube_link']
+    list_display = ['id', 'title', 'type', 'display_image_logo', 'description_short', 'project_type', 'preview',
+                    'description_long', 'video', 'display_image', 'youtube_link']
 
-    def image(self, obj: Project):
+    def display_image_logo(self, obj: Project):
         if obj.image:
             return format_html(f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image.url}"/>')
         return "No Image"
 
-    image.short_description = 'Project Image'
+    display_image_logo.short_description = 'Project Image'
+
+    def display_image(self, obj: Project):
+        if obj.image:
+            return format_html(f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image.url}"/>')
+        return "No Image"
+
+    display_image.short_description = 'Project Image'
 
 
 @admin.register(Blog)
