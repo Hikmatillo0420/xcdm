@@ -33,7 +33,7 @@ class ProjectAdmin(TranslationAdmin):
             return format_html(f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image_logo.url}"/>')
         return "No Image"
 
-    display_image_logo.short_description = 'Project Image logo'
+    display_image_logo.short_description = 'Logo'
 
     def display_image(self, obj: Project):
         if obj.image:
