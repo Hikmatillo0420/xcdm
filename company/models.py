@@ -103,7 +103,7 @@ class TeamMember(OrderedModel):
     full_name = CharField(max_length=256)
     image = ImageField(upload_to='team/')
     position = ForeignKey('company.TeamPosition', on_delete=models.CASCADE)
-    linkedin = URLField(max_length=256, validators=[validate_linkedin_url])
+    linkedin = URLField(max_length=256, validators=[validate_linkedin_url], null=True,blank=True)
 
     def __str__(self):
         return self.full_name

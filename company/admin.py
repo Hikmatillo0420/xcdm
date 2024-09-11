@@ -77,7 +77,7 @@ class TeamPositionAdmin(TranslationAdmin):
 @admin.register(TeamMember)
 class TeamMemberAdmin(OrderedModelAdmin):
     exclude = ('slug',)
-    list_display = ['id', 'full_name', 'image_html', 'position', 'linkedin_url', 'move_up_down_links']
+    list_display = ['id', 'full_name', 'image_html', 'position', 'linkedin', 'move_up_down_links']
     list_display_links = ('id', 'full_name')
     sortable_by = 'position', 'full_name'
 
@@ -89,6 +89,7 @@ class TeamMemberAdmin(OrderedModelAdmin):
     image_html.short_description = 'Image'
 
     def linkedin_url(self, obj: TeamMember):
+
         pattern = r'linkedin\.com\/(?:in|company)\/([a-zA-Z0-9\-]+)\/?'
         match = search(pattern, obj.linkedin)
         if match:
