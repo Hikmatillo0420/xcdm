@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, TeamPosition
+from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, TeamPosition, ContactUs
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -56,3 +56,8 @@ class TeamCategorySerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['members'] = TeamMemberSerializer(instance.members.all(), many=True).data
         return data
+
+class ContactUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactUs
+        fields = "__all__"

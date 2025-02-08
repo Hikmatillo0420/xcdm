@@ -1,9 +1,9 @@
-from rest_framework.generics import (ListAPIView)
+from rest_framework.generics import (ListAPIView, CreateAPIView)
 
-from company.models import Category, Project, Blog, Faq, TeamCategory, TeamMember
+from company.models import Category, Project, Blog, Faq, TeamCategory, TeamMember, ContactUs
 from company.serializers import CategorySerializer, ProjectSerializer, BlogSerializer, FaqSerializer, \
     TeamMemberSerializer, \
-    TeamCategorySerializer
+    TeamCategorySerializer, ContactUsSerializer
 
 
 class CategoryView(ListAPIView):
@@ -29,3 +29,7 @@ class FaqListAPIView(ListAPIView):
 class TeamCategoryListAPIView(ListAPIView):
     queryset = TeamCategory.objects.all()
     serializer_class = TeamCategorySerializer
+
+class ContactUsListAPIView(CreateAPIView):
+    queryset = ContactUs.objects.all()
+    serializer_class = ContactUsSerializer

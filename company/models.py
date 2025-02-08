@@ -98,6 +98,9 @@ class TeamPosition(BaseModel):
         return self.title
 
 
+
+
+
 class TeamMember(OrderedModel):
     category = models.ForeignKey('company.TeamCategory', on_delete=models.CASCADE, related_name='members', )
     full_name = CharField(max_length=256)
@@ -110,3 +113,17 @@ class TeamMember(OrderedModel):
 
     class Meta(OrderedModel.Meta):
         pass
+
+class ContactUs(BaseModel):
+    first_name = CharField(max_length=256)
+    last_name = CharField(max_length=256)
+    email = CharField(max_length=256,null=True,blank=True)
+    phone = CharField(max_length=256,null=True,blank=True)
+    message = TextField()
+
+    def __str__(self):
+        return self.first_name
+
+    class Meta:
+        verbose_name = 'Contact Us'
+        verbose_name_plural = 'Contact Us'

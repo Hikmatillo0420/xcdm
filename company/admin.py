@@ -1,12 +1,14 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
+from django.core.validators import validate_email
 from django.db.models import TextField
 from django.utils.html import format_html, strip_tags
 from django_ckeditor_5.widgets import CKEditor5Widget
 from modeltranslation.admin import TranslationAdmin
 from ordered_model.admin import OrderedModelAdmin
+from pyexpat.errors import messages
 
-from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, TeamPosition
+from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, TeamPosition, ContactUs
 from re import search
 
 
@@ -30,7 +32,8 @@ class ProjectAdmin(TranslationAdmin):
 
     def display_image_logo(self, obj: Project):
         if obj.image_logo:
-            return format_html(f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image_logo.url}"/>')
+            return format_html(
+                f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image_logo.url}"/>')
         return "No Image"
 
     display_image_logo.short_description = 'Logo'
@@ -97,3 +100,14 @@ class TeamMemberAdmin(OrderedModelAdmin):
         return format_html(f'<a href="{obj.linkedin}">{obj.linkedin}</a>')
 
     linkedin_url.short_description = 'Linkedin'
+
+
+@admin.register(ContactUs)
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'first_name', 'last_name', 'phone', 'email', 'message')
+
+    def email_url(self, obj):
+        validate_email(obj.email)
+        return format_html(f'<a href="mailto:{obj.email}">{obj.email}</a>')
+
+    email_url.short_description = 'Email'

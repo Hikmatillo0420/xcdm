@@ -1,6 +1,6 @@
 from django.urls import path
 from company.views import CategoryView, ProjectListAPIView, BlogListAPIView, FaqListAPIView, \
-    TeamCategoryListAPIView
+    TeamCategoryListAPIView, ContactUsListAPIView
 
 urlpatterns = [
 
@@ -9,5 +9,7 @@ urlpatterns = [
     path('blogs', BlogListAPIView.as_view(), name='blog'),
     path('faqs', FaqListAPIView.as_view(), name='faq'),
     path('team-categories', TeamCategoryListAPIView.as_view(), name='team_category'),
+    path('contact-us', ContactUsListAPIView.as_view(), name='contact_us'),
+
 
 ]
