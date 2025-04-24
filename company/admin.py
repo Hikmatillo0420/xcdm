@@ -27,20 +27,19 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Project)
 class ProjectAdmin(TranslationAdmin):
     exclude = ('slug',)
-    list_display = ['id', 'title', 'type', 'display_image_logo', 'description_short', 'project_type', 'preview',
-                    'description_long', 'video', 'display_image', 'youtube_link']
+    list_display = ['id', 'title', 'type', 'display_image_logo']
 
     def display_image_logo(self, obj: Project):
         if obj.image_logo:
             return format_html(
-                f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image_logo.url}"/>')
+                f'<img style="border-radius: 5px;" width="120px" height="100px" src="{obj.image_logo.url}"/>')
         return "No Image"
 
     display_image_logo.short_description = 'Logo'
 
     def display_image(self, obj: Project):
         if obj.image:
-            return format_html(f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image.url}"/>')
+            return format_html(f'<img style="border-radius: 150px;" width="150px" height="50px" src="{obj.image.url}"/>')
         return "No Image"
 
     display_image.short_description = 'Project Image'
@@ -56,7 +55,7 @@ class BlogAdmin(TranslationAdmin):
 
     def banner_image(self, obj: Blog):
         if obj.banner:
-            return format_html(f'<img style="border-radius: 5px;" width="100px" height="35px" src="{obj.banner.url}"/>')
+            return format_html(f'<img style="border-radius: 5px;" width="120px" height="100px" src="{obj.banner.url}"/>')
         return "No Image"
 
     banner_image.short_description = 'Banner'
@@ -64,7 +63,7 @@ class BlogAdmin(TranslationAdmin):
 
 @admin.register(Faq)
 class FaqAdmin(TranslationAdmin):
-    list_display = ['id', 'title', 'description']
+    list_display = ['id', 'title']
 
 
 @admin.register(TeamCategory)
@@ -80,13 +79,13 @@ class TeamPositionAdmin(TranslationAdmin):
 @admin.register(TeamMember)
 class TeamMemberAdmin(OrderedModelAdmin):
     exclude = ('slug',)
-    list_display = ['id', 'full_name', 'image_html', 'position', 'linkedin', 'move_up_down_links']
+    list_display = ['id', 'full_name', 'image_html', 'position', 'move_up_down_links']
     list_display_links = ('id', 'full_name')
     sortable_by = 'position', 'full_name'
 
     def image_html(self, obj: TeamMember):
         if obj.image:
-            return format_html(f'<img style="border-radius: 5px;" width="50px" height="50px" src="{obj.image.url}"/>')
+            return format_html(f'<img style="border-radius: 5px;" width="100px" height="95px" src="{obj.image.url}"/>')
         return "No Image"
 
     image_html.short_description = 'Image'
@@ -104,7 +103,7 @@ class TeamMemberAdmin(OrderedModelAdmin):
 
 @admin.register(ContactUs)
 class ContactUsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name', 'phone', 'email', 'message')
+    list_display = ('id', 'first_name', 'last_name', 'phone',)
 
     def email_url(self, obj):
         validate_email(obj.email)
