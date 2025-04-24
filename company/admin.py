@@ -25,9 +25,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Project)
-class ProjectAdmin(TranslationAdmin):
+class ProjectAdmin(OrderedModelAdmin):
     exclude = ('slug',)
-    list_display = ['id', 'title', 'type', 'display_image_logo']
+    list_display = ['id', 'title', 'type', 'display_image_logo','move_up_down_links']
 
     def display_image_logo(self, obj: Project):
         if obj.image_logo:
@@ -104,6 +104,8 @@ class TeamMemberAdmin(OrderedModelAdmin):
 @admin.register(ContactUs)
 class ContactUsAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'phone',)
+    list_per_page = 10
+
 
     def email_url(self, obj):
         validate_email(obj.email)

@@ -47,7 +47,7 @@ class Category(BaseModel):
         verbose_name_plural = 'Categories'
 
 
-class Project(BaseModel):
+class Project(OrderedModel):
     category = ForeignKey('company.Category', on_delete=models.CASCADE, )
     title = CharField(max_length=255)
     type = CharField(max_length=255)
@@ -69,8 +69,8 @@ class Project(BaseModel):
     def __str__(self):
         return self.title
 
-    class Meta:
-        app_label = 'company'
+    class Meta(OrderedModel.Meta):
+        pass
 
 
 class Blog(BaseModel):
