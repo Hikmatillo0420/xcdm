@@ -62,11 +62,12 @@ class TeamCategorySerializer(serializers.ModelSerializer):
 class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs
-        fields = ['first_name', 'last_name', 'email', 'phone', 'message']
+        fields = "__all__"
+        # fields = ['first_name', 'last_name', 'email', 'phone', 'message']
 
-    def validate_email(self, value):
-        if value:
-            allowed_domains = ['gmail.com', 'mail.ru']
-            if not any(value.endswith(f"@{domain}") for domain in allowed_domains):
-                raise ValidationError(_('Only Gmail or Mail.ru addresses are allowed.'), params={'value': value})
-        return value
+    # def validate_email(self, value):
+    #     if value:
+    #         allowed_domains = ['gmail.com', 'mail.ru']
+    #         if not any(value.endswith(f"@{domain}") for domain in allowed_domains):
+    #             raise ValidationError(_('Only Gmail or Mail.ru addresses are allowed.'), params={'value': value})
+    #     return value

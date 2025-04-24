@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Model, CharField, TextField, ImageField, ForeignKey, FileField, DateField, \
-    URLField
+    URLField, EmailField
 from re import match
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
@@ -121,7 +121,8 @@ class TeamMember(OrderedModel):
 class ContactUs(BaseModel):
     first_name = CharField(max_length=256)
     last_name = CharField(max_length=256)
-    email = CharField(max_length=256,null=True,blank=True, validators=[validators_email_link])
+    email = EmailField(max_length=256, null=True, blank=True)
+    # email = CharField(max_length=256,null=True,blank=True, validators=[validators_email_link])
     phone = CharField(max_length=256,null=True,blank=True)
     message = TextField()
 
