@@ -21,13 +21,6 @@ def validators_email_link(value):
         raise ValidationError(_('Only Gmail or Mail.ru addresses are allowed.'), params={'value': value})
 
 
-def phone_validators(value):
-    if not re.fullmatch(r'\+\d{12}', value):
-        raise ValidationError(
-            _('Phone number must start with "+" . No letters or symbols allowed.'),
-            params={'value': value},
-        )
-
 class BaseModel(Model):
     class Meta:
         abstract = True
@@ -129,7 +122,7 @@ class ContactUs(BaseModel):
     first_name = CharField(max_length=256)
     last_name = CharField(max_length=256)
     email = CharField(max_length=256,null=True,blank=True, validators=[validators_email_link])
-    phone = CharField(max_length=256,null=True,blank=True, validators = [phone_validators])
+    phone = CharField(max_length=256,null=True,blank=True)
     message = TextField()
 
     def __str__(self):

@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, TeamPosition, ContactUs
-
+import re
+from django.utils.translation import gettext_lazy as _
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -60,4 +62,11 @@ class TeamCategorySerializer(serializers.ModelSerializer):
 class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs
-        fields = "__all__"
+        fields = ['first_name', 'last_name', 'email', 'phone', 'message']
+
+    def validate_email(self, value):
+        if value:
+            allowed_domains = ['gmail.com', 'mail.ru']
+            if not any(value.endswith(f"@{domain}") for domain in allowed_domains):
+                raise ValidationError(_('Only Gmail or Mail.ru addresses are allowed.'), params={'value': value})
+        return value
