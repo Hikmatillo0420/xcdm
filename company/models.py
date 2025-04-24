@@ -131,7 +131,7 @@ class ContactUs(BaseModel):
     first_name = CharField(max_length=256)
     last_name = CharField(max_length=256)
     email = EmailField(max_length=256, null=True, blank=True)
-    phone = IntegerField(validators=[phone_validators])
+    phone = IntegerField()
     message = TextField()
 
     def __str__(self):
