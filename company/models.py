@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 from datetime import date
 
-
+import re
 def validate_linkedin_url(value):
     linkedin_pattern = r'^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$'
     if not match(linkedin_pattern, value):
@@ -15,7 +15,18 @@ def validate_linkedin_url(value):
             _('Invalid LinkedIn profile URL.'),
             params={'value': value},
         )
+def validators_email_link(value):
+    allowed_domains = ['gmail.com', 'mail.ru']
+    if not any(value.endswith(f"@{domain}") for domain in allowed_domains):
+        raise ValidationError(_('Only Gmail or Mail.ru addresses are allowed.'), params={'value': value})
 
+
+def phone_validators(value):
+    if not re.fullmatch(r'\+\d{12}', value):
+        raise ValidationError(
+            _('Phone number must start with "+" . No letters or symbols allowed.'),
+            params={'value': value},
+        )
 
 class BaseModel(Model):
     class Meta:
@@ -117,8 +128,8 @@ class TeamMember(OrderedModel):
 class ContactUs(BaseModel):
     first_name = CharField(max_length=256)
     last_name = CharField(max_length=256)
-    email = CharField(max_length=256,null=True,blank=True)
-    phone = CharField(max_length=256,null=True,blank=True)
+    email = CharField(max_length=256,null=True,blank=True, validators=[validators_email_link])
+    phone = CharField(max_length=256,null=True,blank=True, validators = [phone_validators])
     message = TextField()
 
     def __str__(self):
