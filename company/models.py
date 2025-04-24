@@ -7,6 +7,15 @@ from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 from datetime import date
 
+
+def phone_validators(value):
+    if not re.fullmatch(r'\+\d{12}', value):
+        raise ValidationError(
+            _('Phone number must start with "+" . No letters or symbols allowed.'),
+            params={'value': value},
+        )
+
+
 import re
 def validate_linkedin_url(value):
     linkedin_pattern = r'^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$'
