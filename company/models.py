@@ -80,6 +80,7 @@ class Blog(BaseModel):
     description = TextField()
     description_back = TextField()
     image = ImageField(upload_to='blog/', null=True, blank=True)
+    link= URLField(max_length=256, null=True, blank=True)
 
     def __str__(self):
         return self.title
