@@ -77,8 +77,8 @@ class Blog(BaseModel):
     title = CharField(max_length=256)
     create_at = DateField(default=date.today)
     banner = ImageField(upload_to='blog/')
-    description = TextField()
-    description_back = TextField()
+    description = TextField(verbose_name="Description Back")
+    description_back = TextField(verbose_name="Description Front")
     image = ImageField(upload_to='blog/', null=True, blank=True)
     link= URLField(max_length=256, null=True, blank=True)
 
