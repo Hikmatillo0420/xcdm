@@ -87,12 +87,23 @@ class ReorderTest(TestCase):
             )
             for i in range(4)
         ]
+        # Testlar o'qilishi oson bo'lishi uchun tartibni yaratilish ketma-ketligiga tenglashtiramiz
+        # (yangi loyihalar boshiga tushgani sababli aslida teskari bo'ladi).
+        for position, project in enumerate(self.projects):
+            Project.objects.filter(pk=project.pk).update(order=position)
 
     def order(self):
         return list(Project.objects.order_by('order').values_list('title', flat=True))
 
     def test_initial_order(self):
         self.assertEqual(self.order(), ['p0', 'p1', 'p2', 'p3'])
+
+    def test_new_project_goes_to_top(self):
+        Project.objects.create(
+            category=self.cat, title='new', type='t', description_short='s',
+            project_type='pt', preview='http://x', description_long='l',
+        )
+        self.assertEqual(self.order(), ['new', 'p0', 'p1', 'p2', 'p3'])
 
     def reorder(self, titles):
         by_title = {p.title: str(p.pk) for p in self.projects}

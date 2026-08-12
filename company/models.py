@@ -62,6 +62,13 @@ class Project(OrderedModel):
     image = SVGAndImageField(upload_to='project_image/', null=True, blank=True)
     youtube_link = URLField(max_length=255, null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        if is_new:
+            # Yangi loyiha ro'yxat oxiriga emas, boshiga tushadi.
+            self.top()
+
     def change(self, *args, **kwargs):
         video_id = self.youtube_link.split('youtu.be/')[1].split('?')[0]
         params = "si=7Yl10RyvzR8oavkv"
