@@ -1,11 +1,13 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Model, CharField, TextField, ImageField, ForeignKey, FileField, DateField, \
+from django.db.models import Model, CharField, TextField, ForeignKey, FileField, DateField, \
     URLField, EmailField, IntegerField
 from re import match
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 from datetime import date
+
+from company.fields import SVGAndImageField
 
 
 def phone_validators(value):
@@ -37,7 +39,7 @@ class BaseModel(Model):
 
 class Category(BaseModel):
     title = CharField(max_length=256)
-    image = ImageField(upload_to="images/", null=True, blank=True)
+    image = SVGAndImageField(upload_to="images/", null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -51,13 +53,13 @@ class Project(OrderedModel):
     category = ForeignKey('company.Category', on_delete=models.CASCADE, )
     title = CharField(max_length=255)
     type = CharField(max_length=255)
-    image_logo = ImageField(upload_to='project_image_logo/', null=True, blank=True)
+    image_logo = SVGAndImageField(upload_to='project_image_logo/', null=True, blank=True)
     description_short = TextField()
     project_type = CharField(max_length=255)
     preview = CharField(max_length=255, verbose_name='Previw Link')
     description_long = TextField()
     video = FileField(upload_to='project_video/', null=True, blank=True)
-    image = ImageField(upload_to='project_image/', null=True, blank=True)
+    image = SVGAndImageField(upload_to='project_image/', null=True, blank=True)
     youtube_link = URLField(max_length=255, null=True, blank=True)
 
     def change(self, *args, **kwargs):
@@ -76,10 +78,10 @@ class Project(OrderedModel):
 class Blog(BaseModel):
     title = CharField(max_length=256)
     create_at = DateField(default=date.today)
-    banner = ImageField(upload_to='blog/')
+    banner = SVGAndImageField(upload_to='blog/')
     description = TextField(verbose_name="Description Back")
     description_back = TextField(verbose_name="Description Front")
-    image = ImageField(upload_to='blog/', null=True, blank=True)
+    image = SVGAndImageField(upload_to='blog/', null=True, blank=True)
     link= URLField(max_length=256, null=True, blank=True)
 
     def __str__(self):
@@ -118,7 +120,7 @@ class TeamPosition(BaseModel):
 class TeamMember(OrderedModel):
     category = models.ForeignKey('company.TeamCategory', on_delete=models.CASCADE, related_name='members', )
     full_name = CharField(max_length=256)
-    image = ImageField(upload_to='team/')
+    image = SVGAndImageField(upload_to='team/')
     position = ForeignKey('company.TeamPosition', on_delete=models.CASCADE)
     linkedin = URLField(max_length=256, validators=[validate_linkedin_url], null=True,blank=True)
 

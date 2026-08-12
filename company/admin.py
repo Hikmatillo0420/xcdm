@@ -6,8 +6,8 @@ from django.utils.html import format_html, strip_tags
 from django_ckeditor_5.widgets import CKEditor5Widget
 from modeltranslation.admin import TranslationAdmin
 from ordered_model.admin import OrderedModelAdmin
-from pyexpat.errors import messages
 
+from .admin_sortable import DragDropOrderedModelAdmin
 from .models import Category, Project, Blog, Faq, TeamCategory, TeamMember, TeamPosition, ContactUs
 from re import search
 
@@ -25,9 +25,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Project)
-class ProjectAdmin(OrderedModelAdmin):
+class ProjectAdmin(DragDropOrderedModelAdmin):
     exclude = ('slug',)
-    list_display = ['id', 'title', 'type', 'display_image_logo','move_up_down_links']
+    list_display = ['id', 'title', 'type', 'display_image_logo', 'move_up_down_links']
 
     def display_image_logo(self, obj: Project):
         if obj.image_logo:

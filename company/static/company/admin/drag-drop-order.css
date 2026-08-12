@@ -1,0 +1,26 @@
+.drag-handle {
+    display: inline-block;
+    padding: 0 6px;
+    color: #999;
+    font-size: 18px;
+    line-height: 1;
+    cursor: grab;
+    user-select: none;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+tr:hover .drag-handle {
+    color: #417690;
+}
+
+tr.drag-source {
+    opacity: 0.4;
+}
+
+tbody.reorder-saving {
+    opacity: 0.6;
+    pointer-events: none;
+}
