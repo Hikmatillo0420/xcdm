@@ -1,29 +1,29 @@
 import json
 
-from django.contrib.admin.views.main import ORDER_VAR, SEARCH_VAR
 from django.db import transaction
 from django.http import JsonResponse
-from django.urls import path, reverse
+from django.urls import path
 from django.utils.decorators import method_decorator
-from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from ordered_model.admin import OrderedModelAdmin
 
 
 class DragDropOrderedModelAdmin(OrderedModelAdmin):
-    """OrderedModelAdmin, ustiga changelist'da sichqoncha bilan tortib
-    tartibni o'zgartirish (drag & drop) imkoniyati qo'shilgan.
+    """OrderedModelAdmin, ustiga changelist qatorlarini sichqoncha bilan
+    tortib tartibni o'zgartirish imkoniyati qo'shilgan.
 
-    Tortish faqat ro'yxat o'z tartib maydoni bo'yicha saralanganda ishlaydi
-    (boshqa ustun bo'yicha saralash yoki qidiruv yoqilganda tutqich chiqmaydi).
+    Qatorning istalgan bo'sh joyidan ushlab tortiladi; havola, tugma va
+    checkbox'lar odatdagidek ishlayveradi. Tortish faqat ro'yxat o'z tartib
+    maydoni bo'yicha turganda yoqiladi (boshqa ustun bo'yicha saralash yoki
+    qidiruvda o'chadi).
+
+    Eslatma: modelda `order_with_respect_to` ishlatilsa bu mixin to'g'ri
+    ishlamaydi — u butun jadvalni yagona ketma-ketlik deb hisoblaydi.
     """
 
     class Media:
         css = {'all': ('company/admin/drag-drop-order.css',)}
         js = ('company/admin/drag-drop-order.js',)
-
-    # --- URL'lar -----------------------------------------------------------
 
     def get_urls(self):
         info = self.model._meta.app_label, self.model._meta.model_name
@@ -37,38 +37,9 @@ class DragDropOrderedModelAdmin(OrderedModelAdmin):
             ),
         ] + super().get_urls()
 
-    def reorder_url(self):
-        info = self.model._meta.app_label, self.model._meta.model_name
-        return reverse('admin:%s_%s_reorder' % info, current_app=self.admin_site.name)
-
-    # --- Changelist --------------------------------------------------------
-
-    def is_reorderable(self, request):
-        return not request.GET.get(ORDER_VAR) and not request.GET.get(SEARCH_VAR)
-
-    def get_list_display(self, request):
-        list_display = list(super().get_list_display(request))
-        if self.is_reorderable(request) and 'drag_handle' not in list_display:
-            list_display.insert(0, 'drag_handle')
-        return list_display
-
     @property
     def order_field_name(self):
         return getattr(self.model, 'order_field_name', 'order')
-
-    def drag_handle(self, obj):
-        return format_html(
-            '<span class="drag-handle" data-pk="{}" data-order="{}"'
-            ' data-reorder-url="{}" title="{}">&#x2807;</span>',
-            obj.pk,
-            getattr(obj, self.order_field_name),
-            self.reorder_url(),
-            _('Drag to change the position'),
-        )
-
-    drag_handle.short_description = ''
-
-    # --- Saqlash -----------------------------------------------------------
 
     @method_decorator(require_POST)
     def reorder_view(self, request):
@@ -76,30 +47,41 @@ class DragDropOrderedModelAdmin(OrderedModelAdmin):
             return JsonResponse({'error': 'permission denied'}, status=403)
 
         try:
-            pks = json.loads(request.body.decode('utf-8'))['pks']
+            payload = json.loads(request.body.decode('utf-8'))['pks']
         except (ValueError, TypeError, KeyError, UnicodeDecodeError):
             return JsonResponse({'error': 'invalid payload'}, status=400)
 
-        if not isinstance(pks, list) or not pks:
+        if not isinstance(payload, list) or not payload:
             return JsonResponse({'error': 'invalid payload'}, status=400)
 
+        pks = [str(pk) for pk in payload]
+        if len(set(pks)) != len(pks):
+            return JsonResponse({'error': 'duplicate pks'}, status=400)
+
         order_field = self.order_field_name
-        objects = self.model.objects.filter(pk__in=pks).only('pk', order_field)
-        by_pk = {str(obj.pk): obj for obj in objects}
-
-        if len(by_pk) != len(set(str(pk) for pk in pks)):
-            return JsonResponse({'error': 'unknown objects in payload'}, status=400)
-
-        # Ko'rinib turgan qatorlarning mavjud tartib raqamlari qayta
-        # taqsimlanadi — shu sababli sahifalash buzilmaydi.
-        positions = sorted(getattr(obj, order_field) for obj in by_pk.values())
 
         with transaction.atomic():
-            for pk, position in zip((str(pk) for pk in pks), positions):
-                if getattr(by_pk[pk], order_field) != position:
+            rows = list(
+                self.model.objects.order_by(order_field, 'pk')
+                .values_list('pk', order_field)
+            )
+            current = {str(pk): value for pk, value in rows}
+            arranged = [str(pk) for pk, _ in rows]
+            slot_of = {pk: index for index, pk in enumerate(arranged)}
+
+            if any(pk not in slot_of for pk in pks):
+                return JsonResponse({'error': 'unknown objects in payload'}, status=400)
+
+            # Faqat ko'rinib turgan qatorlar egallagan o'rinlar qayta
+            # taqsimlanadi — qolgan sahifalardagi yozuvlar joyida qoladi.
+            for slot, pk in zip(sorted(slot_of[pk] for pk in pks), pks):
+                arranged[slot] = pk
+
+            # Butun ro'yxat 0..N-1 qilib qayta raqamlanadi. Bu eski
+            # yozuvlardagi takrorlangan (masalan, hammasi 0 bo'lgan)
+            # qiymatlarni ham bir yo'la to'g'rilaydi.
+            for position, pk in enumerate(arranged):
+                if current[pk] != position:
                     self.model.objects.filter(pk=pk).update(**{order_field: position})
 
-        return JsonResponse({
-            'pks': [str(pk) for pk in pks],
-            'positions': positions,
-        })
+        return JsonResponse({'pks': pks})

@@ -1,6 +1,8 @@
-/* Django admin changelist'da qatorlarni sichqoncha bilan tortib tartiblash. */
+/* Django admin changelist: qatorni ushlab tortish orqali tartiblash. */
 (function () {
     'use strict';
+
+    var INTERACTIVE = 'a, button, input, select, textarea, label, .related-widget-wrapper';
 
     function onReady(fn) {
         if (document.readyState === 'loading') {
@@ -27,43 +29,54 @@
         return input ? input.value : getCookie('csrftoken');
     }
 
+    /* Qatordagi obyekt id'si: avval action checkbox, bo'lmasa tahrirlash havolasi. */
+    function rowPk(row) {
+        var checkbox = row.querySelector('input[name="_selected_action"]');
+        if (checkbox && checkbox.value) {
+            return checkbox.value;
+        }
+        var links = row.querySelectorAll('a[href]');
+        for (var i = 0; i < links.length; i++) {
+            var match = links[i].getAttribute('href').match(/([^/]+)\/change\/?(?:\?|$)/);
+            if (match) {
+                return decodeURIComponent(match[1]);
+            }
+        }
+        return null;
+    }
+
     onReady(function () {
-        var handles = document.querySelectorAll('.drag-handle[data-reorder-url]');
-        if (!handles.length) {
+        // Ro'yxat boshqa ustun bo'yicha saralangan yoki qidiruv ishlatilgan
+        // bo'lsa, tortish mantiqsiz — o'chirib qo'yamiz.
+        if (/[?&](o|q)=/.test(window.location.search)) {
             return;
         }
 
-        var firstRow = handles[0].closest('tr');
-        if (!firstRow || !firstRow.parentNode) {
+        var table = document.getElementById('result_list');
+        if (!table || !table.tBodies.length) {
             return;
         }
 
-        var tbody = firstRow.parentNode;
-        var reorderUrl = handles[0].getAttribute('data-reorder-url');
+        var tbody = table.tBodies[0];
+        var reorderUrl = window.location.pathname.replace(/\/?$/, '/') + 'reorder/';
         var dragged = null;
-        var savedOrder = currentPks();
 
         function rows() {
             return Array.prototype.filter.call(tbody.rows, function (row) {
-                return row.querySelector('.drag-handle') !== null;
+                return rowPk(row) !== null;
             });
         }
 
-        function currentPks() {
-            return rows().map(function (row) {
-                return row.querySelector('.drag-handle').getAttribute('data-pk');
-            });
+        var sortable = rows();
+        if (sortable.length < 2) {
+            return;
         }
 
-        function restripe() {
-            rows().forEach(function (row, index) {
-                row.classList.remove('row1', 'row2');
-                row.classList.add(index % 2 ? 'row2' : 'row1');
-            });
-        }
+        var savedOrder = sortable.map(rowPk);
+        table.classList.add('drag-sortable');
 
         function save() {
-            var pks = currentPks();
+            var pks = rows().map(rowPk);
             if (pks.join(',') === savedOrder.join(',')) {
                 return;
             }
@@ -85,10 +98,6 @@
                 return response.json();
             }).then(function (data) {
                 savedOrder = data.pks;
-                rows().forEach(function (row, index) {
-                    row.querySelector('.drag-handle')
-                        .setAttribute('data-order', data.positions[index]);
-                });
                 tbody.classList.remove('reorder-saving');
             }).catch(function (error) {
                 tbody.classList.remove('reorder-saving');
@@ -97,14 +106,17 @@
             });
         }
 
-        rows().forEach(function (row) {
-            var handle = row.querySelector('.drag-handle');
-
-            // Qator faqat tutqichdan ushlanganda tortiladi — matn tanlash buzilmaydi.
-            handle.addEventListener('mousedown', function () {
-                row.setAttribute('draggable', 'true');
+        sortable.forEach(function (row) {
+            // Havola/checkbox bosilganda tortish yoqilmaydi, ular odatdagidek ishlaydi.
+            row.addEventListener('mousedown', function (event) {
+                if (event.target.closest(INTERACTIVE)) {
+                    row.removeAttribute('draggable');
+                } else {
+                    row.setAttribute('draggable', 'true');
+                }
             });
-            handle.addEventListener('mouseup', function () {
+
+            row.addEventListener('mouseup', function () {
                 row.removeAttribute('draggable');
             });
 
@@ -120,7 +132,6 @@
                 row.removeAttribute('draggable');
                 row.classList.remove('drag-source');
                 dragged = null;
-                restripe();
                 save();
             });
 

@@ -1,26 +1,22 @@
-.drag-handle {
-    display: inline-block;
-    padding: 0 6px;
-    color: #999;
-    font-size: 18px;
-    line-height: 1;
-    cursor: grab;
-    user-select: none;
+table.drag-sortable tbody tr {
+    cursor: move;
 }
 
-.drag-handle:active {
-    cursor: grabbing;
+/* Havola, tugma, checkbox ustida odatdagi kursor qolsin. */
+table.drag-sortable tbody tr a,
+table.drag-sortable tbody tr button,
+table.drag-sortable tbody tr input,
+table.drag-sortable tbody tr select,
+table.drag-sortable tbody tr label {
+    cursor: pointer;
 }
 
-tr:hover .drag-handle {
-    color: #417690;
+table.drag-sortable tbody tr.drag-source {
+    opacity: 0.35;
+    outline: 2px dashed #417690;
 }
 
-tr.drag-source {
-    opacity: 0.4;
-}
-
-tbody.reorder-saving {
+table.drag-sortable tbody.reorder-saving {
     opacity: 0.6;
     pointer-events: none;
 }

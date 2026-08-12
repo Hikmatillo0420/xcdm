@@ -94,13 +94,39 @@ class ReorderTest(TestCase):
     def test_initial_order(self):
         self.assertEqual(self.order(), ['p0', 'p1', 'p2', 'p3'])
 
+    def reorder(self, titles):
+        by_title = {p.title: str(p.pk) for p in self.projects}
+        return self.client.post(
+            reverse('admin:company_project_reorder'),
+            data=json.dumps({'pks': [by_title[t] for t in titles]}),
+            content_type='application/json',
+        )
+
     def test_reorder_endpoint(self):
-        url = reverse('admin:company_project_reorder')
-        pks = [str(p.pk) for p in [self.projects[3], self.projects[0], self.projects[1], self.projects[2]]]
-        resp = self.client.post(url, data=json.dumps({'pks': pks}), content_type='application/json')
+        resp = self.reorder(['p3', 'p0', 'p1', 'p2'])
         self.assertEqual(resp.status_code, 200, resp.content)
-        self.assertEqual(resp.json()['positions'], [0, 1, 2, 3])
         self.assertEqual(self.order(), ['p3', 'p0', 'p1', 'p2'])
+        self.assertEqual(
+            sorted(Project.objects.values_list('order', flat=True)), [0, 1, 2, 3]
+        )
+
+    def test_reorder_when_all_orders_are_equal(self):
+        """0009 migratsiyasi barcha eski qatorlarga order=0 bergan holat."""
+        Project.objects.update(order=0)
+        resp = self.reorder(['p2', 'p3', 'p0', 'p1'])
+        self.assertEqual(resp.status_code, 200, resp.content)
+        self.assertEqual(self.order(), ['p2', 'p3', 'p0', 'p1'])
+        # Takrorlangan qiymatlar 0..N-1 ga qayta raqamlanadi.
+        self.assertEqual(
+            list(Project.objects.order_by('order').values_list('order', flat=True)),
+            [0, 1, 2, 3],
+        )
+
+    def test_reorder_subset_keeps_other_rows_in_place(self):
+        """Sahifalash: faqat yuborilgan qatorlarning o'rinlari almashadi."""
+        resp = self.reorder(['p2', 'p1'])
+        self.assertEqual(resp.status_code, 200, resp.content)
+        self.assertEqual(self.order(), ['p0', 'p2', 'p1', 'p3'])
 
     def test_get_not_allowed(self):
         resp = self.client.get(reverse('admin:company_project_reorder'))
@@ -124,14 +150,18 @@ class ReorderTest(TestCase):
                                 data=json.dumps({'pks': ['1']}), content_type='application/json')
         self.assertIn(resp.status_code, (302, 403))
 
-    def test_changelist_has_handles(self):
+    def test_duplicate_pks_rejected(self):
+        pk = str(self.projects[0].pk)
+        resp = self.client.post(reverse('admin:company_project_reorder'),
+                                data=json.dumps({'pks': [pk, pk]}),
+                                content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+
+    def test_changelist_loads_script_and_row_ids(self):
         resp = self.client.get(reverse('admin:company_project_changelist'))
         self.assertEqual(resp.status_code, 200)
         html = resp.content.decode()
-        self.assertEqual(html.count('class="drag-handle"'), 4)
         self.assertIn('drag-drop-order.js', html)
-
-    def test_no_handles_when_sorted_by_other_column(self):
-        resp = self.client.get(reverse('admin:company_project_changelist'), {'o': '2'})
-        self.assertEqual(resp.status_code, 200)
-        self.assertNotIn('drag-handle', resp.content.decode())
+        self.assertIn('drag-drop-order.css', html)
+        # JS qator id'sini shu checkbox'dan oladi.
+        self.assertEqual(html.count('name="_selected_action"'), 4)
